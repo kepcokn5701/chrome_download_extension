@@ -13,3 +13,6 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# zip 빌드 임시 산출물
+chrome-extension/
