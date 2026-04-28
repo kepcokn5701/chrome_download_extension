@@ -2,9 +2,14 @@
 *.crx
 *.pem
 *.zip
+# 단, 사용자 가이드 페이지에 포함되는 배포용 zip은 추적
+!docs/chrome-extension.zip
 
 # OS / 에디터
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+# Vercel
+.vercel
