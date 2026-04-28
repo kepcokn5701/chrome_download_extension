@@ -6,9 +6,9 @@ const simFolder = document.getElementById('simFolder');
 const simLog = document.getElementById('simLog');
 
 const SIM_FILES = [
-  { name: '1. 공고문(사남SS 무인보안시스템).hwp', size: '191KB', delay: 250 },
+  { name: '1. 공고문(**공사).hwp', size: '191KB', delay: 250 },
   { name: '2. 정보통신공사 적격심사기준.hwp', size: '62KB', delay: 250 },
-  { name: '3. 예정공정표(사남 무인보안).pdf', size: '86KB', delay: 250 },
+  { name: '3. 예정공정표(**공사).pdf', size: '86KB', delay: 250 },
   { name: '4. 현장 주요 위험요인 설명자료.hwp', size: '55KB', delay: 250 },
   { name: '(안전계약특수조건 별표6)_건설공사분야 안전작업수칙.pdf', size: '44.2MB', delay: 1800 },
   { name: 'kepco 공급자 행동규범.pdf', size: '3.8MB', delay: 600 },
