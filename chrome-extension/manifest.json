@@ -1,23 +1,13 @@
 {
   "manifest_version": 3,
   "name": "SRM 첨부파일 일괄 다운로더",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "KEPCO SRM 페이지에서 보이는 모든 첨부파일을 한 번에 다운로드합니다.",
   "permissions": ["downloads", "scripting", "activeTab", "storage"],
   "host_permissions": ["https://srm.kepco.net/*"],
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "SRM 첨부파일 일괄 다운로더",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+    "default_title": "SRM 첨부파일 일괄 다운로더"
   },
   "background": {
     "service_worker": "background.js"

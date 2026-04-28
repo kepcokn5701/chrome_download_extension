@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- 빨간 다운로드 화살표 -->
+  <rect x="56" y="14" width="16" height="40" fill="#E63946" stroke="#000" stroke-width="2"/>
+  <polygon points="44,52 84,52 64,76" fill="#E63946" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+  <!-- 파란 트레이 (다운로드 받는 위치) -->
+  <path d="M14 78 L114 78 L102 116 L26 116 Z" fill="#7AC7E8" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+  <!-- 트레이 위에 받아진 파일 표시 (파란 점) -->
+  <circle cx="64" cy="96" r="7" fill="#1976D2" stroke="#000" stroke-width="2"/>
+</svg>

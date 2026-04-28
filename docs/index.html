@@ -12,11 +12,11 @@
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="container">
-    <div class="logo-badge">📥 Chrome Extension</div>
+    <img class="hero-icon" src="icon128.png" alt="SRM 다운로더 아이콘" width="72" height="72">
     <h1>SRM 첨부파일 일괄 다운로더</h1>
     <p class="lead">
       KEPCO SRM의 적격심사·PQ심사 첨부파일을 <strong>한 번에 다운로드</strong>합니다.<br>
-      평소 본인 Chrome으로 사용하므로 회사 보안 정책에 부합합니다.
+      평소 사용하시는 본인 Chrome 안에서 그대로 동작합니다.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary btn-large" href="chrome-extension.zip" download>
@@ -25,7 +25,7 @@
       <a class="btn btn-ghost" href="#install">설치 가이드 보기 ↓</a>
     </div>
     <div class="hero-stats">
-      <div><strong>~5초</strong><span>일괄 다운로드</span></div>
+      <div><strong>한 번에</strong><span>일괄 다운로드</span></div>
       <div><strong>0회</strong><span>매번 클릭</span></div>
       <div><strong>1회</strong><span>설치만</span></div>
     </div>
@@ -46,8 +46,8 @@
         <h3>다운로드한 파일이 Downloads에 뒤섞여서 어떤 공고 건지 헷갈린다</h3>
       </div>
       <div class="why-card">
-        <div class="why-icon">🔒</div>
-        <h3>회사 보안에 안 걸리는 도구를 쓰고 싶다 (자동화 X, 본인 액션)</h3>
+        <div class="why-icon">⚡</div>
+        <h3>설치 한 번이면 평소 Chrome에서 버튼 한 번으로 끝내고 싶다</h3>
       </div>
     </div>
   </div>
@@ -280,8 +280,8 @@
     <h2 class="section-title">자주 묻는 질문</h2>
 
     <details class="faq">
-      <summary>회사 보안에 걸리지 않나요?</summary>
-      <p>걸리지 않습니다. 이 도구는 자동화 도구가 아니라 <strong>본인 Chrome 안에서 본인이 클릭한 결과로</strong> 동작합니다. Power Automate Desktop이나 DownThemAll!과 같은 원리입니다. SRM의 봇 차단 정책에 걸리지 않습니다.</p>
+      <summary>이 도구는 어떻게 동작하나요?</summary>
+      <p>본인 Chrome 안에서 사용자가 직접 클릭한 시점에만 동작하는 일반적인 Chrome 확장 프로그램입니다. 평소 Chrome으로 SRM 사용하는 것과 똑같은 흐름이고, 단지 첨부파일 한 개씩 클릭하는 작업을 한 번에 처리해줄 뿐입니다.</p>
     </details>
 
     <details class="faq">
@@ -329,7 +329,11 @@
 <!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="container">
-    <p>
+    <p class="credits">
+      <strong>아이디어 및 제작</strong><br>
+      한국전력공사 경남본부 — 배전건설부 · 재무자재부 · AI혁신팀
+    </p>
+    <p class="footer-links">
       문제가 있거나 개선 제안 →
       <a href="https://github.com/kepcokn5701/chrome_download_extension/issues">GitHub Issues</a>
       ·
