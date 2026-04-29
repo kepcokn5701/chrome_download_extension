@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SRM 첨부파일 일괄 다운로더",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "KEPCO SRM 페이지에서 보이는 모든 첨부파일을 한 번에 다운로드합니다. 다른 사이트도 설정에서 추가 가능.",
   "permissions": ["downloads", "scripting", "activeTab", "storage"],
   "host_permissions": [
