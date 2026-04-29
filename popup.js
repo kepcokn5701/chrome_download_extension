@@ -11,9 +11,34 @@ const btn = document.getElementById("download");
 const folderInput = document.getElementById("folder");
 const log = document.getElementById("log");
 const settingsBtn = document.getElementById("settings");
+const openFolderBtn = document.getElementById("open-folder");
 
 settingsBtn.addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+// 가장 최근 SRM/<타임스탬프>_<폴더명>/ 다운로드를 찾아 그 위치로 탐색기 열기.
+// 없으면 기본 Downloads 폴더로 폴백.
+openFolderBtn.addEventListener("click", async () => {
+  try {
+    const list = await chrome.downloads.search({
+      orderBy: ["-startTime"],
+      limit: 50,
+    });
+    const srm = list.find(
+      (d) =>
+        d.filename &&
+        (d.filename.includes("/SRM/") || d.filename.includes("\\SRM\\")) &&
+        d.state !== "interrupted",
+    );
+    if (srm) {
+      chrome.downloads.show(srm.id);
+      return;
+    }
+  } catch {
+    // fall through to default folder
+  }
+  chrome.downloads.showDefaultFolder();
 });
 
 async function getAllowedSites() {

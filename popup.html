@@ -68,6 +68,19 @@
     button:hover:not(:disabled) {
       background: #1565c0;
     }
+    button.btn-secondary {
+      background: white;
+      color: #1976d2;
+      border: 1px solid #1976d2;
+      margin-top: 6px;
+      padding: 7px;
+      font-size: 13px;
+      font-weight: normal;
+    }
+    button.btn-secondary:hover:not(:disabled) {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
     #log {
       margin-top: 10px;
       padding: 8px;
@@ -98,6 +111,7 @@
   <div class="hint">저장 위치: <code>~/Downloads/SRM/&lt;타임스탬프&gt;_&lt;폴더명&gt;/</code></div>
 
   <button id="download">📥 일괄 다운로드</button>
+  <button id="open-folder" class="btn-secondary" title="가장 최근 SRM 다운로드 폴더를 탐색기로 열기">📁 다운로드 폴더 열기</button>
 
   <div id="log">준비됨. 첨부파일이 보이는 SRM 페이지에서 폴더명 입력 후 [일괄 다운로드] 클릭.</div>
 
