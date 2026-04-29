@@ -542,6 +542,23 @@ kbd {
   font-weight: 600;
   text-align: center;
 }
+.popup-demo-btn-secondary {
+  background: white;
+  color: #1976d2;
+  border: 1px solid #1976d2;
+  font-weight: normal;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.sim-secondary-btn {
+  background: white !important;
+  color: #1976d2 !important;
+  border: 1px solid #1976d2 !important;
+  font-weight: normal !important;
+  font-size: 12px !important;
+  padding: 6px !important;
+  margin-top: 4px !important;
+}
 .popup-demo-arrow {
   font-size: 13px;
   color: #d32f2f;
