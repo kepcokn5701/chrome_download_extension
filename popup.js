@@ -10,6 +10,21 @@ const ATTACHMENT_EXTENSIONS = [
 const btn = document.getElementById("download");
 const folderInput = document.getElementById("folder");
 const log = document.getElementById("log");
+const settingsBtn = document.getElementById("settings");
+
+settingsBtn.addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
+
+async function getAllowedSites() {
+  const { allowedSites = [] } = await chrome.storage.local.get("allowedSites");
+  return allowedSites;
+}
+
+function isHostAllowed(hostname, allowedSites) {
+  const h = hostname.toLowerCase();
+  return allowedSites.some((d) => h === d.toLowerCase());
+}
 
 function appendLog(msg) {
   log.textContent += "\n" + msg;
@@ -44,63 +59,169 @@ btn.addEventListener("click", async () => {
   await chrome.runtime.sendMessage({ action: "setFolder", folder: folderPath });
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab || !tab.url || !tab.url.startsWith("https://srm.kepco.net/")) {
-    appendLog("⚠ 활성 탭이 SRM 페이지가 아닙니다.");
+  if (!tab || !tab.url) {
+    appendLog("⚠ 활성 탭을 찾을 수 없습니다.");
+    btn.disabled = false;
+    return;
+  }
+  let url;
+  try {
+    url = new URL(tab.url);
+  } catch {
+    appendLog("⚠ 활성 탭이 일반 웹페이지가 아닙니다.");
+    btn.disabled = false;
+    return;
+  }
+  if (!/^https?:$/.test(url.protocol)) {
+    appendLog("⚠ http/https 페이지에서만 동작합니다.");
+    btn.disabled = false;
+    return;
+  }
+  const allowedSites = await getAllowedSites();
+  if (!isHostAllowed(url.hostname, allowedSites)) {
+    appendLog(`⚠ "${url.hostname}"는 허용 목록에 없습니다.`);
+    appendLog("   우측 상단 ⚙ 설정에서 사이트를 추가하세요.");
     btn.disabled = false;
     return;
   }
 
-  let result;
+  // 1차 시도: 모든 첨부파일 클릭
+  let firstResult;
   try {
-    const results = await chrome.scripting.executeScript({
-      target: { tabId: tab.id, allFrames: true },
-      func: triggerAttachmentDownloads,
-      args: [ATTACHMENT_EXTENSIONS],
-    });
-    // 모든 frame의 결과 합치기
-    result = (results || []).reduce(
-      (acc, r) => {
-        if (r && r.result) {
-          acc.triggered += r.result.triggered || 0;
-          acc.names.push(...(r.result.names || []));
-        }
-        return acc;
-      },
-      { triggered: 0, names: [] },
-    );
+    firstResult = combineResults(await injectWithFallback(tab.id, null));
   } catch (e) {
     appendLog(`❌ 실행 실패: ${e.message}`);
+    appendLog(`   페이지가 완전히 로드된 후 다시 시도하세요.`);
     btn.disabled = false;
     return;
   }
 
-  if (result.triggered === 0) {
+  if (firstResult.triggered === 0) {
     appendLog("⚠ 첨부파일을 찾지 못했습니다.");
     appendLog("   상세 페이지(첨부파일이 보이는 화면)인지 확인 후 다시 시도하세요.");
     btn.disabled = false;
     return;
   }
 
-  appendLog(`📎 ${result.triggered}개 다운로드 트리거`);
-  for (const name of result.names) {
+  appendLog(`📎 ${firstResult.triggered}개 다운로드 트리거`);
+  for (const name of firstResult.displayNames) {
     appendLog(`  • ${name}`);
   }
 
-  // 마지막 click 후 다운로드가 chrome.downloads에 등록될 시간 확보
-  appendLog("\n(다운로드 완료 대기 중...)");
-  await new Promise((r) => setTimeout(r, 2000));
+  const expectedTexts = firstResult.clickedTexts;
+  const MAX_PASSES = 3; // 1차 + 재시도 2회
+  let missingTexts = [];
 
-  const stats = await waitDownloadsComplete(folderPath);
-  appendLog(`\n✓ 완료: ${stats.completed}/${result.triggered}개`);
-  if (stats.interrupted > 0) {
-    appendLog(`  ⚠ 실패: ${stats.interrupted}개`);
+  for (let pass = 1; pass <= MAX_PASSES; pass++) {
+    appendLog(
+      pass === 1
+        ? "\n(다운로드 완료 대기 중...)"
+        : `\n(재시도 ${pass - 1}회 — 다운로드 완료 대기 중...)`,
+    );
+    await new Promise((r) => setTimeout(r, 2000));
+    await waitDownloadsComplete(folderPath);
+
+    const downloaded = await getDownloadedBaseNames(folderPath);
+    const dlSet = new Set(downloaded);
+    missingTexts = expectedTexts.filter((t) => !dlSet.has(t));
+
+    if (missingTexts.length === 0) {
+      appendLog(`\n✓ 완료: ${expectedTexts.length}/${expectedTexts.length}개`);
+      btn.disabled = false;
+      return;
+    }
+
+    if (pass >= MAX_PASSES) break;
+
+    appendLog(`\n⚠ ${missingTexts.length}개 누락 — 재시도 ${pass}회`);
+    for (const t of missingTexts) appendLog(`  • ${t}`);
+
+    try {
+      await injectWithFallback(tab.id, missingTexts);
+    } catch (e) {
+      appendLog(`❌ 재시도 실패: ${e.message}`);
+      break;
+    }
   }
-  if (stats.inProgress > 0) {
-    appendLog(`  ⏳ 진행 중(타임아웃): ${stats.inProgress}개`);
-  }
+
+  // 모든 패스 끝나도 누락 남음
+  const completed = expectedTexts.length - missingTexts.length;
+  appendLog(`\n△ 완료: ${completed}/${expectedTexts.length}개 (재시도 ${MAX_PASSES - 1}회 후에도 일부 누락)`);
+  appendLog(`누락 ${missingTexts.length}개 (수동 클릭 필요):`);
+  for (const t of missingTexts) appendLog(`  • ${t}`);
 
   btn.disabled = false;
 });
+
+function combineResults(results) {
+  return (results || []).reduce(
+    (acc, r) => {
+      if (r && r.result) {
+        acc.triggered += r.result.triggered || 0;
+        acc.displayNames.push(...(r.result.displayNames || []));
+        acc.clickedTexts.push(...(r.result.clickedTexts || []));
+      }
+      return acc;
+    },
+    { triggered: 0, displayNames: [], clickedTexts: [] },
+  );
+}
+
+async function getDownloadedBaseNames(folderPath) {
+  const startedAfter = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const fwdSlash = folderPath;
+  const backSlash = folderPath.replace(/\//g, "\\");
+  const list = await chrome.downloads.search({ startedAfter });
+  const ours = list.filter(
+    (d) =>
+      (d.filename.includes(fwdSlash) || d.filename.includes(backSlash)) &&
+      d.state === "complete",
+  );
+  // base filename만 추출, 중복 제거
+  return [...new Set(ours.map((d) => d.filename.replace(/^.*[\\\/]/, "")))];
+}
+
+// allFrames=true는 한 프레임이라도 not-ready면 전체 reject.
+// SRM이 탭/패널마다 iframe을 쓰는 구조라 숨김 프레임이 transitional이면 자주 터짐.
+// → 재시도 후 폴백으로 메인 프레임만 주입.
+// targetTextsFilter가 주어지면 그 텍스트와 정확히 일치하는 첨부파일만 클릭 (재시도용).
+async function injectWithFallback(tabId, targetTextsFilter) {
+  const baseOpts = {
+    func: triggerAttachmentDownloads,
+    args: [ATTACHMENT_EXTENSIONS, targetTextsFilter],
+  };
+
+  try {
+    return await chrome.scripting.executeScript({
+      ...baseOpts,
+      target: { tabId, allFrames: true },
+    });
+  } catch (e) {
+    if (!isFrameNotReady(e)) throw e;
+    appendLog("(일부 프레임 not-ready, 잠시 후 재시도)");
+  }
+
+  await new Promise((r) => setTimeout(r, 800));
+
+  try {
+    return await chrome.scripting.executeScript({
+      ...baseOpts,
+      target: { tabId, allFrames: true },
+    });
+  } catch (e) {
+    if (!isFrameNotReady(e)) throw e;
+    appendLog("(여전히 not-ready, 메인 프레임만 시도)");
+  }
+
+  return await chrome.scripting.executeScript({
+    ...baseOpts,
+    target: { tabId },
+  });
+}
+
+function isFrameNotReady(e) {
+  return /frame.*not ready|not ready.*frame/i.test(String(e?.message || e));
+}
 
 async function waitDownloadsComplete(folderPath) {
   // folderPath가 OS 경로로 변환될 때 슬래시가 백슬래시로 바뀔 수 있어 둘 다 매칭
@@ -148,7 +269,8 @@ async function waitDownloadsComplete(folderPath) {
 
 // 페이지 컨텍스트에서 실행되는 함수
 // 첨부파일 텍스트를 찾고, 같은 행의 사이즈를 추출해서 동적 딜레이로 click.
-async function triggerAttachmentDownloads(extensions) {
+// targetTextsFilter가 배열이면 해당 텍스트만 (정확 일치) 클릭 — 재시도 호출용.
+async function triggerAttachmentDownloads(extensions, targetTextsFilter) {
   const pattern = new RegExp("\\.(" + extensions.join("|") + ")$", "i");
   const sizePattern = /([\d,]+(?:\.\d+)?)\s*(KB|MB|GB)/i;
 
@@ -183,10 +305,10 @@ async function triggerAttachmentDownloads(extensions) {
 
   function delayForSize(bytes) {
     const MB = 1024 * 1024;
-    if (bytes < 1 * MB) return 250;
-    if (bytes < 10 * MB) return 600;
-    if (bytes < 50 * MB) return 1800;
-    return 3500;
+    if (bytes < 1 * MB) return 600;
+    if (bytes < 10 * MB) return 1200;
+    if (bytes < 50 * MB) return 2500;
+    return 5000;
   }
 
   function fmtSize(bytes) {
@@ -224,14 +346,23 @@ async function triggerAttachmentDownloads(extensions) {
     items.push({ el, text, sizeBytes });
   }
 
-  // 2단계: 순차적으로 click + 사이즈 기반 딜레이
-  const names = [];
-  for (const { el, text, sizeBytes } of items) {
+  // 2단계: 필터 적용 (재시도 호출 시 누락된 것만)
+  let toClick = items;
+  if (Array.isArray(targetTextsFilter) && targetTextsFilter.length > 0) {
+    const want = new Set(targetTextsFilter);
+    toClick = items.filter((it) => want.has(it.text));
+  }
+
+  // 3단계: 순차적으로 click + 사이즈 기반 딜레이
+  const displayNames = [];
+  const clickedTexts = [];
+  for (const { el, text, sizeBytes } of toClick) {
     const delay = delayForSize(sizeBytes);
     fireClick(el);
-    names.push(`${text} [${fmtSize(sizeBytes)}, wait ${delay}ms]`);
+    displayNames.push(`${text} [${fmtSize(sizeBytes)}, wait ${delay}ms]`);
+    clickedTexts.push(text);
     await sleep(delay);
   }
 
-  return { triggered: items.length, names };
+  return { triggered: toClick.length, displayNames, clickedTexts };
 }

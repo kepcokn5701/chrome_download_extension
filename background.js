@@ -6,6 +6,15 @@
 const FOLDER_KEY = "currentFolder";
 const FOLDER_TTL_MS = 5 * 60 * 1000; // 5분 — 그 이후엔 무효
 
+// 첫 설치 시 기본 사이트(srm.kepco.net)를 허용 목록에 시드.
+// 기존 사용자(이미 목록 있음)는 건드리지 않음.
+chrome.runtime.onInstalled.addListener(async () => {
+  const { allowedSites } = await chrome.storage.local.get("allowedSites");
+  if (!Array.isArray(allowedSites) || allowedSites.length === 0) {
+    await chrome.storage.local.set({ allowedSites: ["srm.kepco.net"] });
+  }
+});
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === "setFolder") {
     chrome.storage.session.set({

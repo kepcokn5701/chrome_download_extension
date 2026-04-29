@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>SRM 다운로더 — 설정</title>
+  <style>
+    body {
+      font-family: 'Malgun Gothic', sans-serif;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #333;
+      background: #fafafa;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 6px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 13px;
+      margin: 0 0 24px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    h2 {
+      font-size: 15px;
+      margin: 0 0 12px;
+      color: #1976d2;
+    }
+    .site-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .site-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      background: #fafafa;
+    }
+    .site-name {
+      font-family: Consolas, monospace;
+      font-size: 13px;
+    }
+    .site-meta {
+      font-size: 11px;
+      color: #999;
+      margin-left: 8px;
+    }
+    .empty {
+      color: #999;
+      font-size: 13px;
+      padding: 16px;
+      text-align: center;
+      border: 1px dashed #ddd;
+      border-radius: 4px;
+    }
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 3px;
+    }
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: #1565c0;
+    }
+    .btn-danger {
+      background: #d32f2f;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: #b71c1c;
+    }
+    .help {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin: 12px 0 0;
+    }
+    .help code {
+      background: #f0f0f0;
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+    .status {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 3px;
+      font-size: 13px;
+      display: none;
+    }
+    .status.ok {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+      display: block;
+    }
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⚙ SRM 다운로더 설정</h1>
+  <p class="subtitle">이 확장이 동작할 사이트를 직접 관리합니다.</p>
+
+  <div class="card">
+    <h2>허용된 사이트</h2>
+    <ul id="siteList" class="site-list"></ul>
+    <div id="emptyMsg" class="empty" hidden>
+      등록된 사이트가 없습니다. 아래에서 추가하세요.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>+ 사이트 추가</h2>
+    <div class="add-row">
+      <input id="domainInput" type="text" placeholder="예: srm.kepco.net">
+      <button id="addBtn">추가</button>
+    </div>
+    <div id="status" class="status"></div>
+    <p class="help">
+      • 도메인만 입력하세요. <code>http://</code>, <code>https://</code>, 경로는 자동 처리됩니다.<br>
+      • 추가 시 브라우저가 권한 다이얼로그를 한 번 띄웁니다 → <strong>"허용"</strong> 클릭.<br>
+      • 거절 시 추가가 취소됩니다.
+    </p>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -14,5 +14,12 @@ Thumbs.db
 # Vercel
 .vercel
 
-# zip 빌드 임시 산출물
-chrome-extension/
+# 사내망 반입용 (소스 파일 사본 — 빌드 스크립트로 동기화)
+extension/
+
+# 진단용 스크린샷 (사내 보안정책상 매일 삭제 대상이라 commit하지 않음)
+업무*.jpg
+업무*.png
+인터넷망*.jpg
+인터넷망*.png
+인터넷망*.PNG

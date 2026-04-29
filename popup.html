@@ -12,8 +12,29 @@
     }
     h2 {
       font-size: 14px;
-      margin: 0 0 10px;
+      margin: 0;
       color: #333;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .icon-btn {
+      width: auto;
+      margin: 0;
+      padding: 4px 8px;
+      background: transparent;
+      color: #555;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      line-height: 1;
+    }
+    .icon-btn:hover:not(:disabled) {
+      background: #f0f0f0;
+      color: #1976d2;
     }
     label {
       display: block;
@@ -67,7 +88,10 @@
   </style>
 </head>
 <body>
-  <h2>SRM 첨부파일 일괄 다운로더</h2>
+  <div class="header">
+    <h2>SRM 첨부파일 일괄 다운로더</h2>
+    <button id="settings" class="icon-btn" title="설정 — 허용 사이트 관리">⚙</button>
+  </div>
 
   <label for="folder">저장 폴더명 (공고명 등):</label>
   <input id="folder" type="text" placeholder="예: 무인보안시스템" autofocus>
