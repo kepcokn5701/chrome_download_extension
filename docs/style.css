@@ -480,6 +480,93 @@ kbd {
   color: #555;
 }
 
+/* ===== Inline popup demo (used in usage step 4) ===== */
+.popup-demo {
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  margin: 16px 0;
+  max-width: 540px;
+}
+.popup-demo-head {
+  background: #f7f7f7;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.popup-demo-gear {
+  font-size: 14px;
+  color: #555;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 2px 8px;
+  background: white;
+}
+.popup-demo-body { padding: 14px; }
+.popup-demo-body label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+}
+.popup-demo-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 6px 0;
+}
+.popup-demo-input {
+  flex: 0 0 220px;
+  padding: 7px 9px;
+  border: 2px solid #1976d2;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #e3f2fd;
+  color: #0d47a1;
+  font-weight: 500;
+}
+.popup-demo-btn {
+  flex: 0 0 220px;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: #1976d2;
+  color: white;
+  border: 2px solid #1565c0;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: center;
+}
+.popup-demo-arrow {
+  font-size: 13px;
+  color: #d32f2f;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.popup-demo-hint {
+  font-size: 11px;
+  color: #888;
+  margin: 6px 0 12px;
+}
+.popup-demo-hint code {
+  font-size: 11px;
+  padding: 1px 4px;
+}
+@media (max-width: 700px) {
+  .popup-demo-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .popup-demo-input,
+  .popup-demo-btn { flex: 1; width: 100%; }
+}
+
 /* ===== Simulation ===== */
 .sim-frame {
   position: relative;
